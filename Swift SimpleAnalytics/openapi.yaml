@@ -1,0 +1,51 @@
+---
+openapi: 3.0.1
+info:
+  title: SimpleAnalytics ServerSide API
+  description: This is the OpenAPI specification for the Simple Analytics tracking API. See https://docs.simpleanalytics.com/events/server-side#page-views
+  contact:
+    name: SimpleAnalytics
+    email: support@wecity.nl
+  version: 1.0.0
+servers:
+- url: https://queue.simpleanalyticscdn.com
+paths:
+  /events:
+    post:
+      summary: Track an event
+      operationId: event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad request. User ID must be an integer and larger than 0.
+        '401':
+          description: Authorization information is missing or invalid.
+        '404':
+          description: A user with the specified ID was not found.
+        '429':
+          description: Too many requests
+        '5XX':
+          description: Unexpected error.
+components:
+    schemas:
+      Event:
+        type: object
+        properties:
+          type:
+            type: string
+            enum:
+              - event
+              - pageview
+          hostname:
+            type: string
+          event:
+            type: string
+          ua:
+            type: string
