@@ -3,8 +3,8 @@
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-struct testAPI {
-    func testAPIConnection() {
+public struct testAPI {
+    public func testAPIConnection() {
         let client = Client(
             serverURL: try! Servers.server1(),
             transport: URLSessionTransport()
