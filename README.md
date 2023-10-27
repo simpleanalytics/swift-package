@@ -20,7 +20,7 @@ You can create an instance where you need it, or you can make an extension and a
 import SwiftSimpleAnalytics
 
 extension SimpleAnalytics {
-    static let shared: SimpleAnalytics = SimpleAnalytics(hostname: "yourapp.com)
+    static let shared: SimpleAnalytics = SimpleAnalytics(hostname: "yourapp.com")
 }
 ```
 
