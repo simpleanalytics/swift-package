@@ -2,14 +2,14 @@ import XCTest
 @testable import SwiftSimpleAnalytics
 
 final class Swift_SimpleAnalyticsTests: XCTestCase {
-    func testPageview() throws {
+    func testPageview() async throws {
         let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
-        tracker.track(path: "/test")
+        await tracker.trackPageView(path: "/test")
     }
     
-    func testEvent() throws {
+    func testEvent() async throws {
         let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
-        tracker.track(event: "test")
+        await tracker.trackEvent(event: "test")
     }
     
     func testInvalidHostname() throws {
