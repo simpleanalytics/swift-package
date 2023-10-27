@@ -1,13 +1,14 @@
 //
-//  File.swift
+//  UserAgent.swift
 //  
 //
 //  Created by Roel van der Kraan on 27/10/2023.
-// https://gist.github.com/majeedyaseen/61a177e7799ef4f68ae9174fc00f2a22
+//
+//  Inspired by:
+//  https://gist.github.com/majeedyaseen/61a177e7799ef4f68ae9174fc00f2a22
 //
 
 import Foundation
-import WebKit
 import UIKit
 
 struct UserAgent {
@@ -29,13 +30,14 @@ struct UserAgent {
     //eg. iOS/10_1
    static private func deviceVersion() -> String {
        let currentDevice = UIDevice.current
-       return "\(currentDevice.systemName)/\(currentDevice.systemVersion)"
+       return "CPU OS \(currentDevice.systemVersion.replacingOccurrences(of: ".", with: "_")) like Mac OS X"
     }
     //eg. iPhone5,2
     static private func deviceName() -> String {
-        var sysinfo = utsname()
-        uname(&sysinfo)
-        return String(bytes: Data(bytes: &sysinfo.machine, count: Int(_SYS_NAMELEN)), encoding: .ascii)!.trimmingCharacters(in: .controlCharacters)
+//        var sysinfo = utsname()
+//        uname(&sysinfo)
+//        return String(bytes: Data(bytes: &sysinfo.machine, count: Int(_SYS_NAMELEN)), encoding: .ascii)!.trimmingCharacters(in: .controlCharacters)
+        return UIDevice.current.localizedModel
     }
     //eg. MyApp/1
    static private func appNameAndVersion() -> String {
@@ -49,19 +51,7 @@ struct UserAgent {
     
     static func userAgentString() -> String {
         //        userAgent = "Mozilla/5.0 (iPad; CPU OS 13_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
-        return "\(appNameAndVersion()) \(deviceName()) \(deviceVersion()) \(CFNetworkVersion()) \(DarwinVersion())"
+        return "\(appNameAndVersion()) (\(deviceName()); \(deviceVersion())) \(CFNetworkVersion()) \(DarwinVersion())"
     }
-    
-//    static func generateDefaultUserAgent(_ completion: @escaping (String) -> Void) {
-//            let useragentSuffix = "SwiftSimpleAnalytics"
-//            DispatchQueue.main.async {
-//                let webView = WKWebView(frame: .zero)
-//                if let userAgent = webView.value(forKey: "userAgent") as? String {
-//                    completion(userAgent.appending(useragentSuffix))
-//                } else {
-//                    completion(useragentSuffix)
-//                }
-//            }
-//        }
 }
 

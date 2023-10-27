@@ -12,7 +12,7 @@ import OpenAPIURLSession
 public class SimpleAnalytics: NSObject {
     var hostname: String
     let client: Client
-    public private(set) var userAgent: String?
+    public private(set) var userAgent: String
     
     // Defines if the user is opted out. When set to true,
     public var isOptedOut: Bool = false
@@ -26,6 +26,7 @@ public class SimpleAnalytics: NSObject {
             transport: URLSessionTransport()
         )
         self.userAgent = UserAgent.userAgentString()
+        debugPrint(userAgent)
     }
     
     /// Track a pageview
