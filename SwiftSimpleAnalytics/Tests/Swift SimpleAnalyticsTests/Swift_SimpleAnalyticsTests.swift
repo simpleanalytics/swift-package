@@ -4,7 +4,7 @@ import XCTest
 final class Swift_SimpleAnalyticsTests: XCTestCase {
     func testPageview() async throws {
         let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
-        await tracker.track(view: "/test")
+        await tracker.track(path: "/test")
     }
     
     func testEvent() async throws {

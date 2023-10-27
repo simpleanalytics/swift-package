@@ -8,13 +8,17 @@
 import Foundation
 import OpenAPIRuntime
 import OpenAPIURLSession
-import WebKit
 
 public class SimpleAnalytics: NSObject {
     var hostname: String
     let client: Client
     let userAgent: String
     
+    // Defines if the user is opted out. When set to true, 
+    public var isOptedOut: Bool = false
+    
+    /// Create the SimpleAnalytics instance that can be used to trigger events and pageviews.
+    /// - Parameter hostname: The hostname as found in SimpleAnalytics
     public init(hostname: String) {
         self.hostname = hostname
         self.client = Client(
@@ -24,11 +28,16 @@ public class SimpleAnalytics: NSObject {
         userAgent = "Mozilla/5.0 (iPad; CPU OS 13_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
     }
     
-    public func track(view: String) async {
+    /// Track a pageview
+    /// - Parameter view: The path of the page. Make sure it starts with a "/"
+    public func track(path: String) async {
+        guard !isOptedOut else {
+            return
+        }
         do {
             let response = try await client.event(
                 body: .json(.init(
-                    _type: .pageview, hostname: hostname, event: "pageview", ua: userAgent, path: view
+                    _type: .pageview, hostname: hostname, event: "pageview", ua: userAgent, path: path
                 )))
             debugPrint(response)
             switch response {
@@ -43,7 +52,12 @@ public class SimpleAnalytics: NSObject {
         }
     }
     
+    /// Track an event
+    /// - Parameter event: The event name
     public func track(event: String) async {
+        guard !isOptedOut else {
+            return
+        }
         do {
             let response = try await client.event(
                 body: .json(.init(
