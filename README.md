@@ -25,16 +25,12 @@ extension SimpleAnalytics {
 ```
 
 ## Tracking Pageviews
-Use pageviews to track screens in your app. Create your own path structure. Currently the trackingcode is async, I'm investigating if this is the right approach. 
+Use pageviews to track screens in your app. Create your own path structure. 
 ```swift
-Task {
-    await SimpleAnalytics.shared.track(path: "/seatlist")
-}
+SimpleAnalytics.shared.track(path: "/seatlist")
 ```
 
 ## Tracking Events
 ```swift
-Task {
-    await SimpleAnalytics.shared.track(event: "seatList/parse")
-}
+SimpleAnalytics.shared.track(event: "seatList/parse")
 ```
