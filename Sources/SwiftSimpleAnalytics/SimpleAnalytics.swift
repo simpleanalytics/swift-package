@@ -30,7 +30,21 @@ public class SimpleAnalytics: NSObject {
     
     /// Track a pageview
     /// - Parameter view: The path of the page. Make sure it starts with a "/"
-    public func track(path: String) async {
+    public func track(path: String) {
+        Task {
+            await self.trackPageView(path: path)
+        }
+    }
+    
+    /// Track an event
+    /// - Parameter event: The event name
+    public func track(event: String) {
+        Task {
+            await self.trackEvent(event: event)
+        }
+    }
+    
+    private func trackPageView(path: String) async {
         guard !isOptedOut else {
             return
         }
@@ -52,9 +66,7 @@ public class SimpleAnalytics: NSObject {
         }
     }
     
-    /// Track an event
-    /// - Parameter event: The event name
-    public func track(event: String) async {
+    private func trackEvent(event: String) async {
         guard !isOptedOut else {
             return
         }
