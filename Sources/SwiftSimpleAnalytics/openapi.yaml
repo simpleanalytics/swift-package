@@ -51,3 +51,7 @@ components:
             type: string
           path:
             type: string
+          language:
+            type: string
+          timezone:
+            type: string

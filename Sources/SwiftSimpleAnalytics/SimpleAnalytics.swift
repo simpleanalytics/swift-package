@@ -10,9 +10,11 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 
 public class SimpleAnalytics: NSObject {
-    var hostname: String
-    let client: Client
-    public private(set) var userAgent: String
+    private var hostname: String
+    private let client: Client
+    private var userAgent: String
+    private var userLanguage: String
+    private var userTimezone: String
     
     // Defines if the user is opted out. When set to true,
     public var isOptedOut: Bool = false
@@ -26,6 +28,8 @@ public class SimpleAnalytics: NSObject {
             transport: URLSessionTransport()
         )
         self.userAgent = UserAgent.userAgentString()
+        self.userLanguage = Locale.current.identifier
+        self.userTimezone = TimeZone.current.identifier
         debugPrint(userAgent)
     }
     
@@ -52,7 +56,7 @@ public class SimpleAnalytics: NSObject {
         do {
             let response = try await client.event(
                 body: .json(.init(
-                    _type: .pageview, hostname: hostname, event: "pageview", ua: userAgent, path: path
+                    _type: .pageview, hostname: hostname, event: "pageview", ua: userAgent, path: path, language: userLanguage, timezone: userTimezone
                 )))
             debugPrint(response)
             switch response {
@@ -74,7 +78,7 @@ public class SimpleAnalytics: NSObject {
         do {
             let response = try await client.event(
                 body: .json(.init(
-                    _type: .event, hostname: hostname, event: event, ua: userAgent
+                    _type: .event, hostname: hostname, event: event, ua: userAgent, language: userLanguage, timezone: userTimezone
                 )))
             debugPrint(response)
             switch response {
