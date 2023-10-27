@@ -10,13 +10,13 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 
 public class SimpleAnalytics: NSObject {
-    private var hostname: String
+    private let hostname: String
     private let client: Client
-    private var userAgent: String
-    private var userLanguage: String
-    private var userTimezone: String
+    private let userAgent: String
+    private let userLanguage: String
+    private let userTimezone: String
     
-    // Defines if the user is opted out. When set to true,
+    // Defines if the user is opted out. When set to true, all tracking will be skipped. This is not persisted between sessions.
     public var isOptedOut: Bool = false
     
     /// Create the SimpleAnalytics instance that can be used to trigger events and pageviews.
