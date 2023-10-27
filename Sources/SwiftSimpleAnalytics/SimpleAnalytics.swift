@@ -25,6 +25,7 @@ public class SimpleAnalytics: NSObject {
             serverURL: try! Servers.server1(),
             transport: URLSessionTransport()
         )
+        self.userAgent = UserAgent.userAgentString()
     }
     
     /// Track a pageview
@@ -44,9 +45,6 @@ public class SimpleAnalytics: NSObject {
     }
     
     internal func trackPageView(path: String) async {
-        UserAgent.generateDefaultUserAgent { agent in
-            self.userAgent = agent
-        }
         guard !isOptedOut else {
             return
         }
@@ -69,9 +67,6 @@ public class SimpleAnalytics: NSObject {
     }
     
     internal func trackEvent(event: String) async {
-        UserAgent.generateDefaultUserAgent { agent in
-            self.userAgent = agent
-        }
         guard !isOptedOut else {
             return
         }

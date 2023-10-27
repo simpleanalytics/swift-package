@@ -8,6 +8,7 @@
 
 import Foundation
 import WebKit
+import UIKit
 
 struct UserAgent {
     
@@ -27,9 +28,8 @@ struct UserAgent {
     
     //eg. iOS/10_1
    static private func deviceVersion() -> String {
-//        let currentDevice = UIDevice.current
-        let infoVersion = ProcessInfo.processInfo.operatingSystemVersion
-       return "\(infoVersion.majorVersion).\(infoVersion.minorVersion).\(infoVersion.patchVersion)"
+       let currentDevice = UIDevice.current
+       return "\(currentDevice.systemName)/\(currentDevice.systemVersion)"
     }
     //eg. iPhone5,2
     static private func deviceName() -> String {
@@ -47,21 +47,21 @@ struct UserAgent {
         return "\(name)/\(version)"
     }
     
-    static func UAString() -> String {
+    static func userAgentString() -> String {
         //        userAgent = "Mozilla/5.0 (iPad; CPU OS 13_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
         return "\(appNameAndVersion()) \(deviceName()) \(deviceVersion()) \(CFNetworkVersion()) \(DarwinVersion())"
     }
     
-    static func generateDefaultUserAgent(_ completion: @escaping (String) -> Void) {
-            let useragentSuffix = "SwiftSimpleAnalytics"
-            DispatchQueue.main.async {
-                let webView = WKWebView(frame: .zero)
-                if let userAgent = webView.value(forKey: "userAgent") as? String {
-                    completion(userAgent.appending(useragentSuffix))
-                } else {
-                    completion(useragentSuffix)
-                }
-            }
-        }
+//    static func generateDefaultUserAgent(_ completion: @escaping (String) -> Void) {
+//            let useragentSuffix = "SwiftSimpleAnalytics"
+//            DispatchQueue.main.async {
+//                let webView = WKWebView(frame: .zero)
+//                if let userAgent = webView.value(forKey: "userAgent") as? String {
+//                    completion(userAgent.appending(useragentSuffix))
+//                } else {
+//                    completion(useragentSuffix)
+//                }
+//            }
+//        }
 }
 
