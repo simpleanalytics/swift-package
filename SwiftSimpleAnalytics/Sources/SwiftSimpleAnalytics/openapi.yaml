@@ -49,3 +49,5 @@ components:
             type: string
           ua:
             type: string
+          path:
+            type: string
