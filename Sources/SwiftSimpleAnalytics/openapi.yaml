@@ -37,21 +37,47 @@ components:
     schemas:
       Event:
         type: object
+        required:
+          - type
+          - hostname
+          - event
         properties:
           type:
             type: string
             enum:
               - event
               - pageview
+            description: The type of event to track. This can be either event or pageview.
           hostname:
             type: string
+            description: "The hostname as set in SimpleAnalytics. Just the domainname, so no https or www. For example: 'mobile.testapp.com'"
           event:
             type: string
+            description: "The name of the event. Or use 'pageview' to track a pageview"
           ua:
             type: string
+            description: The user agent
           path:
             type: string
+            description: "The page path, should start with '/'"
           language:
             type: string
+            description: "The language code of the user. This is used to detect the users country. For example: 'en-US'"
           timezone:
             type: string
+            description: The time zone of the current user so we can detect the country
+          viewport_width:
+            type: integer
+            description: "The current width of the viewport"
+          viewport_height:
+            type: integer
+            description: "The current height of the viewport"
+          screen_width:
+              type: integer
+              description: "The width of the screen"
+          screen_height:
+              type: integer
+              description: "The height of the screen"
+          unique:
+              type: boolean
+              description: "This tells us if this visit is unique. Don’t send this field if you don’t detect unique page views"
