@@ -34,18 +34,19 @@ public class SimpleAnalytics: NSObject {
     }
     
     /// Track a pageview
-    /// - Parameter view: The path of the page. Make sure it starts with a "/"
-    public func track(path: String) {
+    /// - Parameter path: The path of the page.
+    public func track(path: [String]) {
         Task {
-            await self.trackPageView(path: path)
+            await self.trackPageView(path: pathToString(path: path))
         }
     }
     
     /// Track an event
     /// - Parameter event: The event name
-    public func track(event: String) {
+    /// - Parameter path: optional path where the event took place
+    public func track(event: String, path: [String] = []) {
         Task {
-            await self.trackEvent(event: event)
+            await self.trackEvent(event: event, path: pathToString(path: path))
         }
     }
     
@@ -71,14 +72,14 @@ public class SimpleAnalytics: NSObject {
         }
     }
     
-    internal func trackEvent(event: String) async {
+    internal func trackEvent(event: String, path: String = "") async {
         guard !isOptedOut else {
             return
         }
         do {
             let response = try await client.event(
                 body: .json(.init(
-                    _type: .event, hostname: hostname, event: event, ua: userAgent, language: userLanguage, timezone: userTimezone
+                    _type: .event, hostname: hostname, event: event, ua: userAgent, path: path, language: userLanguage, timezone: userTimezone
                 )))
             debugPrint(response)
             switch response {
@@ -91,5 +92,15 @@ public class SimpleAnalytics: NSObject {
         } catch {
             debugPrint("Error tracking pageview")
         }
+    }
+    
+    internal func pathToString(path: [String]) -> String {
+        var safePath: [String] = []
+        for pathItem in path {
+            if let slug = pathItem.convertedToSlug() {
+                safePath.append(slug)
+            }
+        }
+        return "/\(safePath.joined(separator: "/"))"
     }
 }

@@ -17,7 +17,7 @@ You will need to get the hostname of your SimpleAnalytics website to start an in
 let simpleAnalytics = SimpleAnalytics(hostname: "yourapp.com")
 ```
 
-You can create an instance where you need it, or you can make an extension and add a static instance.
+You can create an instance where you need it, or you can make an extension and use it as a static class.
 ```swift
 import SwiftSimpleAnalytics
 
@@ -31,10 +31,14 @@ You can call the tracking functions from anywhere in your app. In SwiftUI, a goo
 ### Tracking Pageviews
 Use pageviews to track screens in your app. Create your own path structure. 
 ```swift
-SimpleAnalytics.shared.track(path: "/seatlist")
+SimpleAnalytics.shared.track(path: ["seatlist"])
 ```
 
 ### Tracking Events
+Use events to track interactions or noticable events like errors or success on a page. You can provide an optional path to track alongside the event.
 ```swift
-SimpleAnalytics.shared.track(event: "seatList/parse")
+SimpleAnalytics.shared.track(event: "logged in")
+```
+```swift
+SimpleAnalytics.shared.track(event: "logged in", path: ["login", "social"])
 ```
