@@ -51,21 +51,26 @@ components:
           hostname:
             type: string
             description: "The hostname as set in SimpleAnalytics. Just the domainname, so no https or www. For example: 'mobile.testapp.com'"
+            example: "testapp.com"
           event:
             type: string
             description: "The name of the event. Or use 'pageview' to track a pageview"
+            example: "login"
           ua:
             type: string
             description: The user agent
           path:
             type: string
             description: "The page path, should start with '/'"
+            example: "/listDetailView"
           language:
             type: string
             description: "The language code of the user. This is used to detect the users country. For example: 'en-US'"
+            example: "en-US"
           timezone:
             type: string
             description: The time zone of the current user so we can detect the country
+            example: "Europe/Amsterdam"
           viewport_width:
             type: integer
             description: "The current width of the viewport"
@@ -81,3 +86,18 @@ components:
           unique:
               type: boolean
               description: "This tells us if this visit is unique. Don’t send this field if you don’t detect unique page views"
+          metadata:
+              type: object
+              description: "Metadata is a simple key/value object. We don’t allow nesting, functions, objects, arrays, and falsy values (except for booleans)."
+              additionalProperties:
+                anyOf:
+                  - type: string
+                  - type: boolean
+                  - type: number
+                  - type: string
+                    format: date-time
+              example:
+                filename: document.pdf
+                darkmode: true
+                product_id: 3340
+                created_at: 2023-10-06T06:30:17.123Z
