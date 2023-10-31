@@ -23,7 +23,7 @@ You can create an instance where you need it, or you can make an extension and u
 import SwiftSimpleAnalytics
 
 extension SimpleAnalytics {
-    static let shared: SimpleAnalytics = SimpleAnalytics(hostname: "yourapp.com")
+    static let shared: SimpleAnalytics = SimpleAnalytics(hostname: "mobileapp.yourdomain.com")
 }
 ```
 
@@ -32,8 +32,13 @@ You can call the tracking functions from anywhere in your app.
 ### Tracking Pageviews
 Use pageviews to track screens in your app. Create your own path structure. 
 ```swift
-SimpleAnalytics.shared.track(path: ["seatlist"])
+SimpleAnalytics.shared.track(path: ["list"])
 ```
+To represent a hierarchy in your views, add every level as an entry in the path array:
+```swift
+SimpleAnalytics.shared.track(path: ["detailview", "item1", "edit"])
+```
+This will be converted to a pageview on `/detailview/item1/edit` on Simple Analytics.
 
 ### Tracking Events
 Use events to track interactions or noticable events like errors or success on a page. You can provide an optional path to track alongside the event.
