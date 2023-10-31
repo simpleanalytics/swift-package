@@ -1,20 +1,21 @@
 # Simple Analytics Swift Package
-Swift package for Simple Analytics. Currently in development. This is an alpha version, everything might change.
+Swift package for [Simple Analytics](https://www.simpleanalytics.com/?referral=roel-van-der-kraan). Currently in development. This is an alpha version, everything might change.
 
 ## Installation
 Use Xcode to add the package dependency.
 
 ## Usage
-You'll need a Simple Analytics account to be able to use this package. Sign up for one via https://www.simpleanalytics.com/?referral=roel-van-der-kraan
+You'll need a Simple Analytics account to be able to use this package. See [Simple Analytics](https://www.simpleanalytics.com/?referral=roel-van-der-kraan) for more info.
 
 Import the library:
 ```swift
 import SwiftSimpleAnalytics
 ```
 
-You will need to get the hostname of your Simple Analytics website to start an instance of `SimpleAnalytics`. Use an existing one or create a new one specificly for your app. It doesn't have to be an existing website. Make sure the hostname matches the domain name in Simple Analytics (without http:// or https://)
+You will need the hostname of a Simple Analytics website to start an instance of `SimpleAnalytics` in your app. You can add a fake "website" to Simple Analytics specifically for your app. There is no need to point to a real server. You can use something like `mobileapp.yourdomain.com`. Skip the HTML validation by clicking "I installed the script". 
+⚠️ Make sure the hostname you set in Swift matches the website domain name in Simple Analytics (without http:// or https://).
 ```swift
-let simpleAnalytics = SimpleAnalytics(hostname: "yourapp.com")
+let simpleAnalytics = SimpleAnalytics(hostname: "mobileapp.yourdomain.com")
 ```
 
 You can create an instance where you need it, or you can make an extension and use it as a static class.
