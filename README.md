@@ -30,7 +30,7 @@ extension SimpleAnalytics {
 ## Tracking
 You can call the tracking functions from anywhere in your app.
 ### Tracking Pageviews
-Use pageviews to track screens in your app. Create your own path structure. 
+Use pageviews to track screens in your app.
 ```swift
 SimpleAnalytics.shared.track(path: ["list"])
 ```
@@ -41,10 +41,11 @@ SimpleAnalytics.shared.track(path: ["detailview", "item1", "edit"])
 This will be converted to a pageview on `/detailview/item1/edit` on Simple Analytics.
 
 ### Tracking Events
-Use events to track interactions or noticable events like errors or success on a page. You can provide an optional path to track alongside the event.
+Use events to track interactions or noticable events like errors or success on a page.
 ```swift
 SimpleAnalytics.shared.track(event: "logged in")
 ```
+You can provide an optional path to track alongside the event.
 ```swift
 SimpleAnalytics.shared.track(event: "logged in", path: ["login", "social"])
 ```
@@ -64,7 +65,7 @@ struct ContentView: View {
             Text("Hello, world!")
         }
         .padding()
-        .onAppear() {
+        .onAppear {
             SimpleAnalytics.shared.track(path: ["example"])
         }
     }
