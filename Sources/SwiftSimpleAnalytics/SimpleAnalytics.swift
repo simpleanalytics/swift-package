@@ -13,6 +13,8 @@ public class SimpleAnalytics: NSObject {
     private let userAgent: String
     private let userLanguage: String
     private let userTimezone: String
+    private var visitDate: Date?
+    private var visitDateKey = "simpleanalytics.visitdate"
     
     // Defines if the user is opted out. When set to true, all tracking will be skipped. This is not persisted between sessions.
     public var isOptedOut: Bool = false
@@ -24,6 +26,7 @@ public class SimpleAnalytics: NSObject {
         self.userAgent = UserAgent.userAgentString()
         self.userLanguage = Locale.current.identifier
         self.userTimezone = TimeZone.current.identifier
+        self.visitDate = UserDefaults.standard.object(forKey: visitDateKey) as? Date
         debugPrint(userAgent)
     }
     
@@ -51,7 +54,8 @@ public class SimpleAnalytics: NSObject {
             ua: userAgent,
             path: path,
             language: userLanguage,
-            timezone: userTimezone
+            timezone: userTimezone,
+            unique: isUnique()
         )
         
         sendEventRequest(event: event)
@@ -68,7 +72,9 @@ public class SimpleAnalytics: NSObject {
             ua: userAgent,
             path: path,
             language: userLanguage,
-            timezone: userTimezone)
+            timezone: userTimezone,
+            unique: isUnique()
+        )
         sendEventRequest(event: event)
     }
     
@@ -98,5 +104,26 @@ public class SimpleAnalytics: NSObject {
             }
         }
         return "/\(safePath.joined(separator: "/"))"
+    }
+    
+    /// Simple Analytics uses the isUnique flag to determine visitors from pageviews. The first event/pageview for the day
+    /// should get this isUnique flag.
+    /// - Returns: if this is a unique first visit for today
+    internal func isUnique() -> Bool {
+        if let visitDate = self.visitDate {
+            if Calendar.current.isDateInToday(visitDate) {
+                // Last visit tracked is in today, so not unique
+                return false
+            } else {
+                // Last visit is not in today, so unique.
+                self.visitDate = Date()
+                UserDefaults.standard.set(visitDate, forKey: visitDateKey)
+                return true
+            }
+        } else {
+            visitDate = Date()
+            UserDefaults.standard.set(visitDate, forKey: visitDateKey)
+            return true
+        }
     }
 }
