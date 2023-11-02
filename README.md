@@ -9,7 +9,7 @@ You'll need a Simple Analytics account to be able to use this package. See [Simp
 
 Import the library:
 ```swift
-import SwiftSimpleAnalytics
+import SimpleAnalytics
 ```
 
 You will need the hostname of a Simple Analytics website to start an instance of `SimpleAnalytics` in your app. You can add a fake "website" to Simple Analytics specifically for your app. There is no need to point to a real server. You can use something like `mobileapp.yourdomain.com`. Skip the HTML validation by clicking "I installed the script". 
@@ -20,7 +20,7 @@ let simpleAnalytics = SimpleAnalytics(hostname: "mobileapp.yourdomain.com")
 
 You can create an instance where you need it, or you can make an extension and use it as a static class.
 ```swift
-import SwiftSimpleAnalytics
+import SimpleAnalytics
 
 extension SimpleAnalytics {
     static let shared: SimpleAnalytics = SimpleAnalytics(hostname: "mobileapp.yourdomain.com")
@@ -54,7 +54,7 @@ SimpleAnalytics.shared.track(event: "logged in", path: ["login", "social"])
  In SwiftUI, a good place to put the Pageview tracking code is in your view `.onAppear{}` modifier. 
 ```swift
 import SwiftUI
-import SwiftSimpleAnalytics
+import SimpleAnalytics
 
 struct ContentView: View {
     var body: some View {
@@ -76,7 +76,7 @@ struct ContentView: View {
 When using UIKit, you can put Pageview tracking in `viewDidAppear()`
 ```swift
 import UIKit
-import SwiftSimpleAnalytics
+import SimpleAnalytics
 
 class ExampleViewController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
