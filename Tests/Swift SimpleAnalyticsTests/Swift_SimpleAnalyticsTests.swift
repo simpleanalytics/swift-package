@@ -1,5 +1,5 @@
 import XCTest
-@testable import SwiftSimpleAnalytics
+@testable import SimpleAnalytics
 
 final class Swift_SimpleAnalyticsTests: XCTestCase {
     func testPageview() throws {
