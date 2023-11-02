@@ -6,12 +6,10 @@
 //
 
 import Foundation
-import OpenAPIRuntime
-import OpenAPIURLSession
+import Alamofire
 
 public class SimpleAnalytics: NSObject {
     private let hostname: String
-    private let client: Client
     private let userAgent: String
     private let userLanguage: String
     private let userTimezone: String
@@ -23,10 +21,6 @@ public class SimpleAnalytics: NSObject {
     /// - Parameter hostname: The hostname as found in SimpleAnalytics
     public init(hostname: String) {
         self.hostname = hostname
-        self.client = Client(
-            serverURL: try! Servers.server1(),
-            transport: URLSessionTransport()
-        )
         self.userAgent = UserAgent.userAgentString()
         self.userLanguage = Locale.current.identifier
         self.userTimezone = TimeZone.current.identifier
@@ -36,61 +30,63 @@ public class SimpleAnalytics: NSObject {
     /// Track a pageview
     /// - Parameter path: The path of the page.
     public func track(path: [String]) {
-        Task {
-            await self.trackPageView(path: pathToString(path: path))
-        }
+        self.trackPageView(path: pathToString(path: path))
     }
     
     /// Track an event
     /// - Parameter event: The event name
     /// - Parameter path: optional path where the event took place
     public func track(event: String, path: [String] = []) {
-        Task {
-            await self.trackEvent(event: event, path: pathToString(path: path))
-        }
+        self.trackEvent(event: event, path: pathToString(path: path))
     }
     
-    internal func trackPageView(path: String) async {
+    internal func trackPageView(path: String) {
         guard !isOptedOut else {
             return
         }
-        do {
-            let response = try await client.event(
-                body: .json(.init(
-                    _type: .pageview, hostname: hostname, event: "pageview", ua: userAgent, path: path, language: userLanguage, timezone: userTimezone
-                )))
-            debugPrint(response)
-            switch response {
-            case .created(_):
-                debugPrint("Track success")
-            default:
-                debugPrint("Error tracking pageview")
-                
-            }
-        } catch {
-            debugPrint("Error tracking pageview")
-        }
+        let event = Event(
+            type: .pageview,
+            hostname: hostname,
+            event: "pageview",
+            ua: userAgent,
+            path: path,
+            language: userLanguage,
+            timezone: userTimezone
+        )
+        
+        sendEventRequest(event: event)
     }
     
-    internal func trackEvent(event: String, path: String = "") async {
+    internal func trackEvent(event: String, path: String = "") {
         guard !isOptedOut else {
             return
         }
-        do {
-            let response = try await client.event(
-                body: .json(.init(
-                    _type: .event, hostname: hostname, event: event, ua: userAgent, path: path, language: userLanguage, timezone: userTimezone
-                )))
+        let event = Event(
+            type: .event,
+            hostname: hostname,
+            event: event,
+            ua: userAgent,
+            path: path,
+            language: userLanguage,
+            timezone: userTimezone)
+        sendEventRequest(event: event)
+    }
+    
+    internal func sendEventRequest(event: Event) {
+        AF.request("https://queue.simpleanalyticscdn.com/events",
+                   method: .post,
+                   parameters: event,
+                   encoder: JSONParameterEncoder.default).responseData { response in
+            
             debugPrint(response)
-            switch response {
-            case .created(_):
-                debugPrint("Track success")
-            default:
-                debugPrint("Error tracking pageview")
-                
+            if let httpStatusCode = response.response?.statusCode {
+                switch httpStatusCode {
+                case 201:
+                    debugPrint("Simple Analytics: Event tracked")
+                default:
+                    debugPrint("Simple Analytics: Error while tracking Event to SimpleAnalytics, response code: \(httpStatusCode)")
+                }
             }
-        } catch {
-            debugPrint("Error tracking pageview")
         }
     }
     

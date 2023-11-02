@@ -15,9 +15,7 @@ let package = Package(
             targets: ["SwiftSimpleAnalytics"]),
     ],
     dependencies: [
-            .package(url: "https://github.com/apple/swift-openapi-generator", .upToNextMinor(from: "0.3.0")),
-            .package(url: "https://github.com/apple/swift-openapi-runtime", .upToNextMinor(from: "0.3.0")),
-            .package(url: "https://github.com/apple/swift-openapi-urlsession", .upToNextMinor(from: "0.3.0")),
+            .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.8.1")),
         ],
     
     targets: [
@@ -27,21 +25,11 @@ let package = Package(
             name: "SwiftSimpleAnalytics",
             dependencies: [
                             .product(
-                                name: "OpenAPIRuntime",
-                                package: "swift-openapi-runtime"
-                            ),
-                            .product(
-                                name: "OpenAPIURLSession",
-                                package: "swift-openapi-urlsession"
+                                name: "Alamofire",
+                                package: "Alamofire"
                             ),
                         ],
-            path: "Sources",
-                        plugins: [
-                            .plugin(
-                                name: "OpenAPIGenerator",
-                                package: "swift-openapi-generator"
-                            )
-                        ]),
+            path: "Sources"),
         .testTarget(
             name: "SwiftSimpleAnalyticsTests",
             dependencies: ["SwiftSimpleAnalytics"]),
