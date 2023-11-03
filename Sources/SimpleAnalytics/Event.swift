@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Event: Encodable {
+internal struct Event: Encodable {
     let type: EventType
     let hostname: String
     let event: String
@@ -37,7 +37,7 @@ struct Event: Encodable {
     }
 }
 
-enum EventType: String, Encodable {
+internal enum EventType: String, Encodable {
     case event = "event"
     case pageview = "pageview"
 }
