@@ -11,7 +11,7 @@
 import Foundation
 import UIKit
 
-struct UserAgent {
+internal struct UserAgent {
     
     //eg. Darwin/16.3.0
     static private func DarwinVersion() -> String {
@@ -34,9 +34,6 @@ struct UserAgent {
     }
     //eg. iPhone5,2
     static private func deviceName() -> String {
-//        var sysinfo = utsname()
-//        uname(&sysinfo)
-//        return String(bytes: Data(bytes: &sysinfo.machine, count: Int(_SYS_NAMELEN)), encoding: .ascii)!.trimmingCharacters(in: .controlCharacters)
         return UIDevice.current.localizedModel
     }
     //eg. MyApp/1
@@ -49,6 +46,9 @@ struct UserAgent {
         return "\(name)/\(version)"
     }
     
+    /// Generates a useragent for the app that SimpleAnalytics is included in. Simple Analytics uses this user agent to determine
+    /// the device type.
+    /// - Returns: A useragent for the app.
     static func userAgentString() -> String {
         //        userAgent = "Mozilla/5.0 (iPad; CPU OS 13_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
         return "\(appNameAndVersion()) (\(deviceName()); \(deviceVersion())) \(CFNetworkVersion()) \(DarwinVersion())"

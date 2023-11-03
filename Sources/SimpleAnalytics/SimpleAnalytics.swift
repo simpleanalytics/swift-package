@@ -6,39 +6,55 @@
 //
 
 import Foundation
-import Alamofire
 
+/// SimpleAnalytics allows you to send events and pageviews from Swift  to Simple Analytics
+///
+/// - Important: Make sure the hostname matches the website domain name in Simple Analytics (without `http://` or `https://`).
+///
+/// ````
+/// let simpleAnalytics = SimpleAnalytics(hostname: "mobileapp.yourdomain.com")
+/// ````
+/// You can create an instance where you need it, or you can make an extension and use it as a static class.
+/// ````
+/// import SimpleAnalytics
+///
+/// extension SimpleAnalytics {
+///    static let shared: SimpleAnalytics = SimpleAnalytics(hostname: "mobileapp.yourdomain.com")
+/// }
+/// ````
 public class SimpleAnalytics: NSObject {
+    /// The hostname of the website in Simple Analytics the tracking should be send to. Without `https://`
     private let hostname: String
     private let userAgent: String
     private let userLanguage: String
     private let userTimezone: String
+    /// The last date a unique visit was tracked.
     private var visitDate: Date?
+    /// Key used to store the visit date in UserDefaults
     private var visitDateKey = "simpleanalytics.visitdate"
     
-    // Defines if the user is opted out. When set to true, all tracking will be skipped. This is not persisted between sessions.
+    /// Defines if the user is opted out. When set to `true`, all tracking will be skipped. This is not persisted between sessions.
     public var isOptedOut: Bool = false
     
     /// Create the SimpleAnalytics instance that can be used to trigger events and pageviews.
-    /// - Parameter hostname: The hostname as found in SimpleAnalytics
+    /// - Parameter hostname: The hostname as found in SimpleAnalytics, without `https://`
     public init(hostname: String) {
         self.hostname = hostname
         self.userAgent = UserAgent.userAgentString()
         self.userLanguage = Locale.current.identifier
         self.userTimezone = TimeZone.current.identifier
         self.visitDate = UserDefaults.standard.object(forKey: visitDateKey) as? Date
-        debugPrint(userAgent)
     }
     
     /// Track a pageview
-    /// - Parameter path: The path of the page.
+    /// - Parameter path: The path of the page as string array, for example: `["list", "detailview", "edit"]`
     public func track(path: [String]) {
         self.trackPageView(path: pathToString(path: path))
     }
     
     /// Track an event
     /// - Parameter event: The event name
-    /// - Parameter path: optional path where the event took place
+    /// - Parameter path: optional path array where the event took place, for example: `["list", "detailview", "edit"]`
     public func track(event: String, path: [String] = []) {
         self.trackEvent(event: event, path: pathToString(path: path))
     }
@@ -58,7 +74,7 @@ public class SimpleAnalytics: NSObject {
             unique: isUnique()
         )
         
-        sendEventRequest(event: event)
+        RequestDispatcher.sendEventRequest(event: event)
     }
     
     internal func trackEvent(event: String, path: String = "") {
@@ -75,27 +91,12 @@ public class SimpleAnalytics: NSObject {
             timezone: userTimezone,
             unique: isUnique()
         )
-        sendEventRequest(event: event)
+        RequestDispatcher.sendEventRequest(event: event)
     }
     
-    internal func sendEventRequest(event: Event) {
-        AF.request("https://queue.simpleanalyticscdn.com/events",
-                   method: .post,
-                   parameters: event,
-                   encoder: JSONParameterEncoder.default).responseData { response in
-            
-            debugPrint(response)
-            if let httpStatusCode = response.response?.statusCode {
-                switch httpStatusCode {
-                case 201:
-                    debugPrint("Simple Analytics: Event tracked")
-                default:
-                    debugPrint("Simple Analytics: Error while tracking Event to SimpleAnalytics, response code: \(httpStatusCode)")
-                }
-            }
-        }
-    }
-    
+    /// Converts an array of strings to a slug structure
+    /// - Parameter path: The array of paths, for example `["list", "detailview"]`.
+    /// - Returns: a slug of the path, for the example `"/list/detailview"`
     internal func pathToString(path: [String]) -> String {
         var safePath: [String] = []
         for pathItem in path {
@@ -106,8 +107,8 @@ public class SimpleAnalytics: NSObject {
         return "/\(safePath.joined(separator: "/"))"
     }
     
-    /// Simple Analytics uses the isUnique flag to determine visitors from pageviews. The first event/pageview for the day
-    /// should get this isUnique flag.
+    /// Simple Analytics uses the `isUnique` flag to determine visitors from pageviews. The first event/pageview for the day
+    /// should get this `isUnique` flag.
     /// - Returns: if this is a unique first visit for today
     internal func isUnique() -> Bool {
         if let visitDate = self.visitDate {
