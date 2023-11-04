@@ -1,8 +1,13 @@
 # Simple Analytics Swift Package
 Swift package for [Simple Analytics](https://www.simpleanalytics.com/?referral=roel-van-der-kraan). Currently in development. This is an alpha version, everything might change.
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fsimpleanalytics%2Fswift-package%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/simpleanalytics/swift-package)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fsimpleanalytics%2Fswift-package%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/simpleanalytics/swift-package)
 
 ## Installation
-Use Xcode to add the package dependency.
+Use Xcode to add the package dependency. `https://github.com/simpleanalytics/swift-package.git`
+
+Or when working with a package manifest use:
+`.package(url: "https://github.com/simpleanalytics/swift-package.git", from: "0.3.0")`
 
 ## Usage
 You'll need a Simple Analytics account to be able to use this package. See [Simple Analytics](https://www.simpleanalytics.com/?referral=roel-van-der-kraan) for more info.
