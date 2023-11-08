@@ -22,7 +22,7 @@ import Foundation
 ///    static let shared: SimpleAnalytics = SimpleAnalytics(hostname: "mobileapp.yourdomain.com")
 /// }
 /// ````
-public class SimpleAnalytics: NSObject {
+final public class SimpleAnalytics: NSObject {
     /// The hostname of the website in Simple Analytics the tracking should be send to. Without `https://`
     private let hostname: String
     private let userAgent: String
@@ -30,11 +30,16 @@ public class SimpleAnalytics: NSObject {
     private let userTimezone: String
     /// The last date a unique visit was tracked.
     private var visitDate: Date?
-    /// Key used to store the visit date in UserDefaults
-    private var visitDateKey = "simpleanalytics.visitdate"
     
-    /// Defines if the user is opted out. When set to `true`, all tracking will be skipped. This is not persisted between sessions.
-    public var isOptedOut: Bool = false
+    /// Defines if the user is opted out. When set to `true`, all tracking will be skipped. This is persisted between sessions.
+    public var isOptedOut: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: Keys.optedOutKey)
+        }
+        set {
+            UserDefaults.standard.setValue(newValue, forKey: Keys.optedOutKey)
+        }
+    }
     
     /// Create the SimpleAnalytics instance that can be used to trigger events and pageviews.
     /// - Parameter hostname: The hostname as found in SimpleAnalytics, without `https://`
@@ -43,7 +48,7 @@ public class SimpleAnalytics: NSObject {
         self.userAgent = UserAgent.userAgentString()
         self.userLanguage = Locale.current.identifier
         self.userTimezone = TimeZone.current.identifier
-        self.visitDate = UserDefaults.standard.object(forKey: visitDateKey) as? Date
+        self.visitDate = UserDefaults.standard.object(forKey: Keys.visitDateKey) as? Date
     }
     
     /// Track a pageview
@@ -118,13 +123,20 @@ public class SimpleAnalytics: NSObject {
             } else {
                 // Last visit is not in today, so unique.
                 self.visitDate = Date()
-                UserDefaults.standard.set(visitDate, forKey: visitDateKey)
+                UserDefaults.standard.set(visitDate, forKey: Keys.visitDateKey)
                 return true
             }
         } else {
+            // No visit date yet, initialize it
             visitDate = Date()
-            UserDefaults.standard.set(visitDate, forKey: visitDateKey)
+            UserDefaults.standard.set(visitDate, forKey: Keys.visitDateKey)
             return true
         }
+    }
+    
+    /// Keys used to store things in UserDefaults
+    internal struct Keys {
+        static let visitDateKey = "simpleanalytics.visitdate"
+        static let optedOutKey = "simpleanalytics.isoptedout"
     }
 }

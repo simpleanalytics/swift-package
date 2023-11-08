@@ -17,7 +17,6 @@ internal struct RequestDispatcher {
                    parameters: event,
                    encoder: JSONParameterEncoder.default).responseData { response in
             
-            debugPrint(response)
             if let httpStatusCode = response.response?.statusCode {
                 switch httpStatusCode {
                 case 201:
