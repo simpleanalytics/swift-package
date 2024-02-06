@@ -28,8 +28,7 @@ final public class SimpleAnalytics: NSObject {
     private let userAgent: String
     private let userLanguage: String
     private let userTimezone: String
-    /// The last date a unique visit was tracked.
-    private var visitDate: Date?
+    private var lastIDFV: String?
     
     /// Defines if the user is opted out. When set to `true`, all tracking will be skipped. This is persisted between sessions.
     public var isOptedOut: Bool {
@@ -48,7 +47,7 @@ final public class SimpleAnalytics: NSObject {
         self.userAgent = UserAgent.userAgentString()
         self.userLanguage = Locale.current.identifier
         self.userTimezone = TimeZone.current.identifier
-        self.visitDate = UserDefaults.standard.object(forKey: Keys.visitDateKey) as? Date
+        self.lastIDFV = UserDefaults.standard.string(forKey: Keys.idfvKey)
     }
     
     /// Track a pageview
@@ -114,29 +113,26 @@ final public class SimpleAnalytics: NSObject {
     
     /// Simple Analytics uses the `isUnique` flag to determine visitors from pageviews. The first event/pageview for the day
     /// should get this `isUnique` flag.
-    /// - Returns: if this is a unique first visit for today
-    internal func isUnique() -> Bool {
-        if let visitDate = self.visitDate {
-            if Calendar.current.isDateInToday(visitDate) {
-                // Last visit tracked is in today, so not unique
-                return false
-            } else {
-                // Last visit is not in today, so unique.
-                self.visitDate = Date()
-                UserDefaults.standard.set(self.visitDate, forKey: Keys.visitDateKey)
-                return true
-            }
+    /// - Returns: if this is a unique first visit for this device
+        internal func isUnique() -> Bool {
+        guard let currentIDFV = UIDevice.current.identifierForVendor?.uuidString else {
+            return false
+        }
+        
+        if let lastIDFV = self.lastIDFV, lastIDFV == currentIDFV {
+            // Same device has already been tracked
+            return false
         } else {
-            // No visit date yet, initialize it
-            visitDate = Date()
-            UserDefaults.standard.set(visitDate, forKey: Keys.visitDateKey)
+            // New or different device, or first time tracking this device
+            self.lastIDFV = currentIDFV
+            UserDefaults.standard.set(currentIDFV, forKey: Keys.idfvKey)
             return true
         }
     }
     
     /// Keys used to store things in UserDefaults
     internal struct Keys {
-        static let visitDateKey = "simpleanalytics.visitdate"
+        static let idfvKey = "simpleanalytics.idfv"
         static let optedOutKey = "simpleanalytics.isoptedout"
     }
 }
