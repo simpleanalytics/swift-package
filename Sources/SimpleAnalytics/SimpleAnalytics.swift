@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// SimpleAnalytics allows you to send events and pageviews from Swift  to Simple Analytics
 ///
