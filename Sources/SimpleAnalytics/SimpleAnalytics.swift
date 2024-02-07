@@ -53,18 +53,18 @@ final public class SimpleAnalytics: NSObject {
     
     /// Track a pageview
     /// - Parameter path: The path of the page as string array, for example: `["list", "detailview", "edit"]`
-    public func track(path: [String]) {
-        self.trackPageView(path: pathToString(path: path))
+    public func track(path: [String]) async {
+        await self.trackPageView(path: pathToString(path: path))
     }
     
     /// Track an event
     /// - Parameter event: The event name
     /// - Parameter path: optional path array where the event took place, for example: `["list", "detailview", "edit"]`
-    public func track(event: String, path: [String] = []) {
-        self.trackEvent(event: event, path: pathToString(path: path))
+    public func track(event: String, path: [String] = []) async {
+        await self.trackEvent(event: event, path: pathToString(path: path))
     }
     
-    internal func trackPageView(path: String) {
+    internal func trackPageView(path: String) async {
         guard !isOptedOut else {
             return
         }
@@ -79,10 +79,10 @@ final public class SimpleAnalytics: NSObject {
             unique: isUnique()
         )
         
-        RequestDispatcher.sendEventRequest(event: event)
+        await RequestDispatcher.sendEventRequest(event: event)
     }
     
-    internal func trackEvent(event: String, path: String = "") {
+    internal func trackEvent(event: String, path: String = "") async {
         guard !isOptedOut else {
             return
         }
@@ -96,7 +96,7 @@ final public class SimpleAnalytics: NSObject {
             timezone: userTimezone,
             unique: isUnique()
         )
-        RequestDispatcher.sendEventRequest(event: event)
+        await RequestDispatcher.sendEventRequest(event: event)
     }
     
     /// Converts an array of strings to a slug structure

@@ -13,14 +13,15 @@ internal struct RequestDispatcher {
     /// - Parameter event: the event to dispatch
     static func sendEventRequest(event: Event) async {
         do {
+            let serializer = JSONResponseSerializer()
+
             let response = try await AF.request("https://queue.simpleanalyticscdn.com/events",
                                                 method: .post,
                                                 parameters: event,
                                                 encoder: JSONParameterEncoder.default)
-                                        .serializingData()
-                                        .response
+                                        .serializingResponse(using: serializer )
             
-            guard let httpStatusCode = response.response?.statusCode else { return }
+            guard let httpStatusCode = await response.response.response?.statusCode else { return }
             
             switch httpStatusCode {
             case 201:

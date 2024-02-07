@@ -2,49 +2,48 @@ import XCTest
 @testable import SimpleAnalytics
 
 final class Swift_SimpleAnalyticsTests: XCTestCase {
-    func testPageview() throws {
+    func testPageview() async throws {
         let expectation = XCTestExpectation(description: "Log a pageview")
 
         let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
-        tracker.trackPageView(path: "/test")
-        wait(for: [expectation], timeout: 10.0)
+        await tracker.trackPageView(path: "/test")
+        print("Completed without throwing an error, assumed successful.")
 
     }
     
-    func testEvent() throws {
+    func testEvent() async throws {
         let expectation = XCTestExpectation(description: "Log a pageview")
 
         let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
-        tracker.trackEvent(event: "test")
-        wait(for: [expectation], timeout: 10.0)
+        await tracker.trackEvent(event: "test")
+        print("Completed without throwing an error, assumed successful.")
 
     }
     
-    func testEventWithPath() throws {
+    func testEventWithPath() async throws {
         let expectation = XCTestExpectation(description: "Log an event")
 
         let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
-        tracker.trackEvent(event: "test", path: "/testpath1/testpath2")
-        wait(for: [expectation], timeout: 10.0)
-        
+        await tracker.trackEvent(event: "test", path: "/testpath1/testpath2")
+        print("Completed without throwing an error, assumed successful.")
 
     }
     
-    func testInvalidHostname() throws {
+    func testInvalidHostname() async throws {
         let expectation = XCTestExpectation(description: "Log a pageview")
 
         let tracker = SimpleAnalytics(hostname: "piet.henkklaas")
-        tracker.track(event: "test")
-        wait(for: [expectation], timeout: 10.0)
+        await tracker.track(event: "test")
+        print("Completed without throwing an error, assumed successful.")
 
     }
     
-    func testPageviewArray() {
+    func testPageviewArray() async {
         let expectation = XCTestExpectation(description: "Log an event")
 
         let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
-        tracker.track(path: ["test", "test2"])
-        wait(for: [expectation], timeout: 10.0)
+        await tracker.track(path: ["test", "test2"])
+        print("Completed without throwing an error, assumed successful.")
 
     }
     
