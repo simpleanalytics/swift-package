@@ -53,18 +53,20 @@ final public class SimpleAnalytics: NSObject {
     
     /// Track a pageview
     /// - Parameter path: The path of the page as string array, for example: `["list", "detailview", "edit"]`
-    public func track(path: [String]) {
-        self.trackPageView(path: pathToString(path: path))
+    /// - Parameter metadata: An optional dictionary of metadata to be sent with the pageview. `["plan": "premium", "referrer": "landing_page"]`
+    public func track(path: [String], metadata: [String: Any]? = nil) {
+        self.trackPageView(path: pathToString(path: path), metadata: metadataToJsonString(metadata: metadata))
     }
     
     /// Track an event
     /// - Parameter event: The event name
     /// - Parameter path: optional path array where the event took place, for example: `["list", "detailview", "edit"]`
-    public func track(event: String, path: [String] = []) {
-        self.trackEvent(event: event, path: pathToString(path: path))
+    /// - Parameter metadata: An optional dictionary of metadata to be sent with the pageview. `["plan": "premium", "referrer": "landing_page"]`
+    public func track(event: String, path: [String] = [], metadata: [String: Any]? = nil) {
+        self.trackEvent(event: event, path: pathToString(path: path), metadata: metadataToJsonString(metadata: metadata))
     }
     
-    internal func trackPageView(path: String) {
+    internal func trackPageView(path: String, metadata: String? = nil) {
         guard !isOptedOut else {
             return
         }
@@ -76,13 +78,14 @@ final public class SimpleAnalytics: NSObject {
             path: path,
             language: userLanguage,
             timezone: userTimezone,
-            unique: isUnique()
+            unique: isUnique(),
+            metadata: metadata
         )
         
         RequestDispatcher.sendEventRequest(event: event)
     }
     
-    internal func trackEvent(event: String, path: String = "") {
+    internal func trackEvent(event: String, path: String = "", metadata: String? = nil) {
         guard !isOptedOut else {
             return
         }
@@ -94,7 +97,8 @@ final public class SimpleAnalytics: NSObject {
             path: path,
             language: userLanguage,
             timezone: userTimezone,
-            unique: isUnique()
+            unique: isUnique(),
+            metadata: metadata
         )
         RequestDispatcher.sendEventRequest(event: event)
     }
@@ -110,6 +114,21 @@ final public class SimpleAnalytics: NSObject {
             }
         }
         return "/\(safePath.joined(separator: "/"))"
+    }
+    
+    /// Serializes metadata dictionary into a JSON string.
+    /// - Parameter metadata: The metadata dictionary, which is optional.
+    /// - Returns: A JSON string representation of the metadata or nil if serialization fails or metadata is nil/empty.
+    internal func metadataToJsonString(metadata: [String: Any]?) -> String? {
+        guard let metadata = metadata, !metadata.isEmpty else { return nil }
+        
+        do {
+            let data = try JSONSerialization.data(withJSONObject: metadata, options: [])
+            return String(data: data, encoding: .utf8)
+        } catch {
+            print("Error serializing metadata to JSON string: \(error)")
+            return nil
+        }
     }
     
     /// Simple Analytics uses the `isUnique` flag to determine visitors from pageviews. The first event/pageview for the day
