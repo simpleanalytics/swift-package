@@ -123,7 +123,7 @@ final public class SimpleAnalytics: NSObject {
             } else {
                 // Last visit is not in today, so unique.
                 self.visitDate = Date()
-                UserDefaults.standard.set(visitDate, forKey: Keys.visitDateKey)
+                UserDefaults.standard.set(self.visitDate, forKey: Keys.visitDateKey)
                 return true
             }
         } else {
