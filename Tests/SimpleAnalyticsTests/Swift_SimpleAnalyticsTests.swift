@@ -48,6 +48,24 @@ final class Swift_SimpleAnalyticsTests: XCTestCase {
 
     }
     
+    func testPageviewWithDefaultsGroup() throws {
+        let expectation = XCTestExpectation(description: "Log a pageview")
+
+        let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app", sharedDefaultsSuiteName: "app.yourapp.com")
+        tracker.trackPageView(path: "/test")
+        wait(for: [expectation], timeout: 10.0)
+
+    }
+    
+    func testEventWithDefaultsGroup() throws {
+        let expectation = XCTestExpectation(description: "Log a pageview")
+
+        let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app", sharedDefaultsSuiteName: "app.yourapp.com")
+        tracker.trackEvent(event: "test")
+        wait(for: [expectation], timeout: 10.0)
+
+    }
+    
     func testPath() {
         
         let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
