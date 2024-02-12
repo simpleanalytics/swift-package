@@ -60,6 +60,12 @@ You can provide an optional path to track alongside the event.
 SimpleAnalytics.shared.track(event: "logged in", path: ["login", "social"])
 ```
 
+### Tracking Visitors for Apps + Widgets
+If you have an app + widget(s), by default one visit per day per target (app, widget) is treated as separate 'visitors'. This means that if you have an app with a small and medium widget, one person using the core app and both widgets will show in your SimpleAnalytics dashboard as 3 visitors. However, you can ensure one visitor only appears once per day by creating an App Group in your Xcode project. Create a new App Group ([instructions](https://developer.apple.com/documentation/xcode/configuring-app-groups)) in each of your targets (Project > Targets > Signing & Capabilities > App Groups) with the same name. Use this app group name in your SimpleAnalytics instance.
+```swift
+let simpleAnalytics = SimpleAnalytics(hostname: "app.simpleanalytics.com", sharedDefaultsSuiteName: "group.com.simpleanlytics.app")
+```
+
 ## Examples
 ### SwiftUI example
  In SwiftUI, a good place to put the Pageview tracking code is in your view `.onAppear{}` modifier. 
