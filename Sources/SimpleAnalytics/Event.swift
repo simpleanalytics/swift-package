@@ -20,8 +20,9 @@ internal struct Event: Encodable {
     let screen_width: Int?
     let screen_height: Int?
     let unique: Bool?
+    var metadata: String?
     
-    init(type: EventType, hostname: String, event: String, ua: String? = nil, path: String? = nil, language: String? = nil, timezone: String? = nil, viewport_width: Int? = nil, viewport_height: Int? = nil, screen_width: Int? = nil, screen_height: Int? = nil, unique: Bool? = nil) {
+    init(type: EventType, hostname: String, event: String, ua: String? = nil, path: String? = nil, language: String? = nil, timezone: String? = nil, viewport_width: Int? = nil, viewport_height: Int? = nil, screen_width: Int? = nil, screen_height: Int? = nil, unique: Bool? = nil, metadata: String? = nil) {
         self.type = type
         self.hostname = hostname
         self.event = event
@@ -34,6 +35,7 @@ internal struct Event: Encodable {
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.unique = unique
+        self.metadata = metadata
     }
 }
 
