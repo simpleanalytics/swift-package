@@ -58,7 +58,7 @@ final public class SimpleAnalytics: NSObject {
     /// - Parameter: sharedDefaultsSuiteName: When extensions (such as a main app and widget) have a set of sharedDefaults (using an App Group) that unique user can be counted once using this (instead of two or more times when using app and widget, etc.)
     public init(hostname: String, sharedDefaultsSuiteName: String) {
         self.hostname = hostname
-        self.userAgent = UserAgent.userAgentString()
+        self.userAgent = userAgentProvider.userAgent
         self.userLanguage = Locale.current.identifier
         self.userTimezone = TimeZone.current.identifier
         self.sharedDefaultsSuiteName = sharedDefaultsSuiteName

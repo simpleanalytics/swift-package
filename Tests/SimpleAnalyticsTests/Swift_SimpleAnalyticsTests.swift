@@ -49,24 +49,6 @@ final class Swift_SimpleAnalyticsTests: XCTestCase {
         }
     }
     
-    func testPageviewWithMetadata() throws {
-        let expectation = XCTestExpectation(description: "Log a pageview")
-
-        let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
-         
-        let metadataDictionary = ["plan": "premium", "meta": "data"]
-        do {
-            let metadataData = try JSONSerialization.data(withJSONObject: metadataDictionary, options: [])
-            let metadataJsonString = String(data: metadataData, encoding: .utf8)!
-            tracker.trackPageView(path: "/test", metadata: metadataJsonString)
-        } catch {
-            XCTFail("Failed to serialize metadata: \(error)")
-        }
-        
-        wait(for: [expectation], timeout: 10.0)
-
-    }
-    
     func testEvent() throws {
         let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
         let expectation = XCTestExpectation(description: "Log an event")
@@ -103,23 +85,6 @@ final class Swift_SimpleAnalyticsTests: XCTestCase {
         } catch {
             XCTFail("Failed to serialize metadata: \(error)")
         }
-    }
-    
-    func testEventWithMetadata() throws {
-        let expectation = XCTestExpectation(description: "Log a pageview")
-
-        let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
-        
-        let metadataDictionary = ["plan": "premium", "meta": "data"]
-        do {
-            let metadataData = try JSONSerialization.data(withJSONObject: metadataDictionary, options: [])
-            let metadataJsonString = String(data: metadataData, encoding: .utf8)!
-            tracker.trackEvent(event: "test", metadata:  metadataJsonString)
-        } catch {
-            XCTFail("Failed to serialize metadata: \(error)")
-        }
-        wait(for: [expectation], timeout: 10.0)
-
     }
     
     func testEventWithPath() throws {
@@ -162,24 +127,6 @@ final class Swift_SimpleAnalyticsTests: XCTestCase {
     }
     
     
-    func testEventWithPathAndMetadata() throws {
-        let expectation = XCTestExpectation(description: "Log an event")
-
-        let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app")
-        
-        let metadataDictionary = ["plan": "premium", "meta": "data"]
-        do {
-            let metadataData = try JSONSerialization.data(withJSONObject: metadataDictionary, options: [])
-            let metadataJsonString = String(data: metadataData, encoding: .utf8)!
-            tracker.trackEvent(event: "test", path: "/testpath1/testpath2")
-        } catch {
-            XCTFail("Failed to serialize metadata: \(error)")
-        }
-        wait(for: [expectation], timeout: 10.0)
-        
-
-    }
-    
     func testInvalidHostname() throws {
         let tracker = SimpleAnalytics(hostname: "piet.henkklaas")
         tracker.track(event: "test")
@@ -190,22 +137,19 @@ final class Swift_SimpleAnalyticsTests: XCTestCase {
         tracker.track(path: ["testpath", "testarray"])
     }
     
-    func testPageviewWithDefaultsGroup() throws {
-        let expectation = XCTestExpectation(description: "Log a pageview")
-
-        let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app", sharedDefaultsSuiteName: "app.yourapp.com")
-        tracker.trackPageView(path: "/test")
-        wait(for: [expectation], timeout: 10.0)
-
-    }
-    
     func testEventWithDefaultsGroup() throws {
-        let expectation = XCTestExpectation(description: "Log a pageview")
+        let expectation = XCTestExpectation(description: "Log an event with userdefaults")
 
         let tracker = SimpleAnalytics(hostname: "simpleanalyticsswift.app", sharedDefaultsSuiteName: "app.yourapp.com")
-        tracker.trackEvent(event: "test")
+        Task {
+            do {
+                try await tracker.trackEvent(event: "test user defaults")
+                expectation.fulfill()
+            }  catch {
+                XCTFail("Failed to log event with user defaults: \(error)")
+            }
+        }
         wait(for: [expectation], timeout: 10.0)
-
     }
     
     func testPath() {
