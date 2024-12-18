@@ -24,12 +24,13 @@ import Foundation
 /// ````
 final public class SimpleAnalytics: NSObject {
     /// The hostname of the website in Simple Analytics the tracking should be send to. Without `https://`
-    private let hostname: String
+    let hostname: String
     private let userAgent: String
     private let userLanguage: String
     private let userTimezone: String
     /// The last date a unique visit was tracked.
     private var visitDate: Date?
+    private let userAgentProvider = UserAgentProvider()
     private var sharedDefaultsSuiteName: String?
     
     /// Defines if the user is opted out. When set to `true`, all tracking will be skipped. This is persisted between sessions.
@@ -46,7 +47,7 @@ final public class SimpleAnalytics: NSObject {
     /// - Parameter hostname: The hostname as found in SimpleAnalytics, without `https://`
     public init(hostname: String) {
         self.hostname = hostname
-        self.userAgent = UserAgent.userAgentString()
+        self.userAgent = userAgentProvider.userAgent
         self.userLanguage = Locale.current.identifier
         self.userTimezone = TimeZone.current.identifier
         self.visitDate = UserDefaults.standard.object(forKey: Keys.visitDateKey) as? Date
@@ -68,7 +69,13 @@ final public class SimpleAnalytics: NSObject {
     /// - Parameter path: The path of the page as string array, for example: `["list", "detailview", "edit"]`
     /// - Parameter metadata: An optional dictionary of metadata to be sent with the pageview. `["plan": "premium", "referrer": "landing_page"]`
     public func track(path: [String], metadata: [String: Any]? = nil) {
-        self.trackPageView(path: pathToString(path: path), metadata: metadataToJsonString(metadata: metadata))
+        Task {
+            do {
+                try await self.trackPageView(path: pathToString(path: path), metadata: metadataToJsonString(metadata: metadata))
+            } catch {
+                debugPrint("SimpleAnalytics: Error tracking pageview: \(error.localizedDescription)")
+            }
+        }
     }
     
     /// Track an event
@@ -76,10 +83,16 @@ final public class SimpleAnalytics: NSObject {
     /// - Parameter path: optional path array where the event took place, for example: `["list", "detailview", "edit"]`
     /// - Parameter metadata: An optional dictionary of metadata to be sent with the pageview. `["plan": "premium", "referrer": "landing_page"]`
     public func track(event: String, path: [String] = [], metadata: [String: Any]? = nil) {
-        self.trackEvent(event: event, path: pathToString(path: path), metadata: metadataToJsonString(metadata: metadata))
+        Task {
+            do {
+                try await self.trackEvent(event: event, path: pathToString(path: path), metadata: metadataToJsonString(metadata: metadata))
+            } catch {
+                debugPrint("SimpleAnalytics: Error tracking event: \(error.localizedDescription)")
+            }
+        }
     }
     
-    internal func trackPageView(path: String, metadata: String? = nil) {
+    internal func trackPageView(path: String, metadata: String? = nil) async throws {
         guard !isOptedOut else {
             return
         }
@@ -95,10 +108,10 @@ final public class SimpleAnalytics: NSObject {
             metadata: metadata
         )
         
-        RequestDispatcher.sendEventRequest(event: event)
+        try await RequestDispatcher.sendEventRequest(event: event)
     }
     
-    internal func trackEvent(event: String, path: String = "", metadata: String? = nil) {
+    internal func trackEvent(event: String, path: String = "", metadata: String? = nil) async throws {
         guard !isOptedOut else {
             return
         }
@@ -113,7 +126,8 @@ final public class SimpleAnalytics: NSObject {
             unique: isUnique(),
             metadata: metadata
         )
-        RequestDispatcher.sendEventRequest(event: event)
+        
+        try await RequestDispatcher.sendEventRequest(event: event)
     }
     
     /// Converts an array of strings to a slug structure
