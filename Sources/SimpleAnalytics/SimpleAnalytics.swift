@@ -25,12 +25,11 @@ import Foundation
 final public class SimpleAnalytics: NSObject {
     /// The hostname of the website in Simple Analytics the tracking should be send to. Without `https://`
     let hostname: String
-    private let userAgent: String
+    private var userAgent: String?
     private let userLanguage: String
     private let userTimezone: String
     /// The last date a unique visit was tracked.
     private var visitDate: Date?
-    private let userAgentProvider = UserAgentProvider()
     private var sharedDefaultsSuiteName: String?
     
     /// Defines if the user is opted out. When set to `true`, all tracking will be skipped. This is persisted between sessions.
@@ -47,7 +46,6 @@ final public class SimpleAnalytics: NSObject {
     /// - Parameter hostname: The hostname as found in SimpleAnalytics, without `https://`
     public init(hostname: String) {
         self.hostname = hostname
-        self.userAgent = userAgentProvider.userAgent
         self.userLanguage = Locale.current.identifier
         self.userTimezone = TimeZone.current.identifier
         self.visitDate = UserDefaults.standard.object(forKey: Keys.visitDateKey) as? Date
@@ -58,7 +56,6 @@ final public class SimpleAnalytics: NSObject {
     /// - Parameter: sharedDefaultsSuiteName: When extensions (such as a main app and widget) have a set of sharedDefaults (using an App Group) that unique user can be counted once using this (instead of two or more times when using app and widget, etc.)
     public init(hostname: String, sharedDefaultsSuiteName: String) {
         self.hostname = hostname
-        self.userAgent = userAgentProvider.userAgent
         self.userLanguage = Locale.current.identifier
         self.userTimezone = TimeZone.current.identifier
         self.sharedDefaultsSuiteName = sharedDefaultsSuiteName
@@ -96,6 +93,7 @@ final public class SimpleAnalytics: NSObject {
         guard !isOptedOut else {
             return
         }
+        let userAgent = try await getUserAgent()
         let event = Event(
             type: .pageview,
             hostname: hostname,
@@ -115,6 +113,7 @@ final public class SimpleAnalytics: NSObject {
         guard !isOptedOut else {
             return
         }
+        let userAgent = try await getUserAgent()
         let event = Event(
             type: .event,
             hostname: hostname,
@@ -186,6 +185,14 @@ final public class SimpleAnalytics: NSObject {
             }                
             return true
         }
+    }
+    
+    /// Get the cached userAgent or fetch a new one
+    internal func getUserAgent() async throws -> String {
+        if let userAgent { return userAgent }
+        let newUserAgent = try await UserAgentFetcher.fetch()
+        userAgent = newUserAgent
+        return newUserAgent
     }
     
     /// Keys used to store things in UserDefaults

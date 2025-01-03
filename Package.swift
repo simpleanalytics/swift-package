@@ -9,29 +9,10 @@ let package = Package(
         .iOS(.v13), .tvOS(.v13), .watchOS(.v6), .macOS(.v10_15)
     ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "SimpleAnalytics",
-            targets: ["SimpleAnalytics"]),
+        .library(name: "SimpleAnalytics", targets: ["SimpleAnalytics"])
     ],
-    dependencies: [
-            .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.8.1")),
-        ],
-    
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "SimpleAnalytics",
-            dependencies: [
-                            .product(
-                                name: "Alamofire",
-                                package: "Alamofire"
-                            ),
-                        ],
-            path: "Sources"),
-        .testTarget(
-            name: "SimpleAnalyticsTests",
-            dependencies: ["SimpleAnalytics"]),
+        .target(name: "SimpleAnalytics", path: "Sources"),
+        .testTarget(name: "SimpleAnalyticsTests", dependencies: ["SimpleAnalytics"])
     ]
 )
